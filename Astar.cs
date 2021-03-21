@@ -75,9 +75,9 @@ public class Astar
         this.map = map;
     }
 
-    public Stack<State> Search(Pos start, Pos end)
+    public Queue<State> Search(Pos start, Pos end)
     {
-        Stack<State> stack = new Stack<State>();
+        Queue<State> q = new Queue<State>();
         List<State> O = new List<State>();
         List<State> C = new List<State>();
 
@@ -92,7 +92,7 @@ public class Astar
             }
 
             if(O.Count == 0)
-                return stack;
+                return q;
 
             int minIdx = GetMinIndexFromO(O, end);
             curr = O[minIdx];
@@ -105,19 +105,39 @@ public class Astar
                 break;
             }
         }
-        //todo. 순서대로 해서 꼬인거 삭제해야함
-        for(int n = C.Count -1; n >= 0; n--)
+        //make queue
+        q.Enqueue(C[0]);
+        Pos nextId = C[0].id;
+        int idx = 0;
+        while(true)
         {
-            State s = C[n];
-            stack.Push(C[n]);
-            if(s.id.Compare(start))
+            idx = FindNode(C, nextId, idx);
+            State s = C[idx];
+            q.Enqueue(s);
+            nextId = s.id;
+            
+            if(s.id.Compare(end))
             {
                 break;
             }
         }
         
-        return stack;
+        //Console.WriteLine(String.Format("C: {0}, Q: {1}", C.Count, q.Count));
+        return q;
     }
+    private int FindNode(List<State> C, Pos id, int startIdx)
+    {
+        for(int n = C.Count -1; n > startIdx; n--)
+        {
+            State s = C[n];
+            if(s.parent.Compare(id))
+            {
+                return n;
+            }
+        }
+        return -1;
+    }
+
     private List<Pos> GetNeighbors(List<State> C, Pos p)
     {
         List<Pos> list = new List<Pos>();
@@ -125,7 +145,7 @@ public class Astar
         for(int n=0; n < neighborPos.Length; n++)
         {
             Pos pos = new Pos(p.x + neighborPos[n].x, p.y + neighborPos[n].y);
-            if(pos.x >= map.GetLength(0) || pos.x < 0 || pos.y >= map.GetLength(1) || pos.y < 0)
+            if(pos.x >= map.GetLength(0) || pos.x < 0 || pos.y >= map.GetLength(1) || pos.y < 0 || map[pos.x, pos.y] == -1)
             {
                 continue;
             }
