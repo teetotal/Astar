@@ -3,6 +3,22 @@ using System.Collections.Generic;
 
 public class Astar
 {
+    private class TreeNode
+    {
+        public Pos pos;
+        public TreeNode parent;
+        public int depth;
+
+        public TreeNode(Pos pos)
+        {
+            this.pos = new Pos(pos.x, pos.y);
+        }
+        public TreeNode(Pos pos, ref TreeNode parent)
+        {
+            this.pos = new Pos(pos.x, pos.y);
+            this.parent = parent;
+        }
+    }
     public struct Pos
     {
         public int x, y;
@@ -63,6 +79,7 @@ public class Astar
     }
 
     int[,] map; 
+    TreeNode leafNode;
     Pos[] neighborPos = new Pos[4] {
         new Pos(0, 1),
         new Pos(0, -1),
@@ -75,9 +92,8 @@ public class Astar
         this.map = map;
     }
 
-    public Queue<State> Search(Pos start, Pos end)
+    public Stack<Pos> Search(Pos start, Pos end)
     {
-        Queue<State> q = new Queue<State>();
         List<State> O = new List<State>();
         List<State> C = new List<State>();
 
@@ -92,7 +108,7 @@ public class Astar
             }
 
             if(O.Count == 0)
-                return q;
+                return null;
 
             int minIdx = GetMinIndexFromO(O, end);
             curr = O[minIdx];
@@ -105,6 +121,9 @@ public class Astar
                 break;
             }
         }
+        //make tree
+        return MakeTree(C, end);
+        /*
         //make queue
         q.Enqueue(C[0]);
         Pos nextId = C[0].id;
@@ -122,9 +141,50 @@ public class Astar
             }
         }
         
+        
         //Console.WriteLine(String.Format("C: {0}, Q: {1}", C.Count, q.Count));
         return q;
+        */
     }
+    private Stack<Pos> MakeTree(List<State> C, Pos end)
+    {
+        TreeNode root = new TreeNode(C[0].id);
+        if(!root.pos.Compare(end))
+            AddChildTree(C, ref root, end, 1);
+        
+        Stack<Pos> stack = new Stack<Pos>();
+        TreeNode node = leafNode;
+        stack.Push(node.pos);
+        while(node.parent != null)
+        {
+            node = node.parent;
+            stack.Push(node.pos);
+        }
+
+        return stack;
+    }
+
+    private void AddChildTree(List<State> C, ref TreeNode node, Pos end, int depth)
+    {
+        for(int n = 1; n < C.Count; n++)
+        {
+            if(C[n].parent.Compare(node.pos))
+            {
+                TreeNode t = new TreeNode(C[n].id, ref node);
+                t.depth = depth;
+
+                if(end.Compare(t.pos))
+                {
+                    if(leafNode == null || leafNode.depth > depth)
+                        leafNode = t;
+                }
+                else {
+                    AddChildTree(C, ref t, end, depth + 1);
+                }
+            }
+        }
+    }
+    /*
     private int FindNode(List<State> C, Pos id, int startIdx)
     {
         for(int n = C.Count -1; n > startIdx; n--)
@@ -137,6 +197,7 @@ public class Astar
         }
         return -1;
     }
+    */
 
     private List<Pos> GetNeighbors(List<State> C, Pos p)
     {
