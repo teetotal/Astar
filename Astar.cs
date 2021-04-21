@@ -85,6 +85,13 @@ public class Astar
         new Pos(0, -1),
         new Pos(1, 0),
         new Pos(-1, 0)
+        //대각선
+        /*
+        new Pos(1, 1),
+        new Pos(-1, 1),
+        new Pos(1, -1),
+        new Pos(-1, -1)
+        */
     };
 
     public Astar(int[,] map)
@@ -218,6 +225,7 @@ public class Astar
 
         return list;
     }
+    /*
     // x + y
     private float CalDistance(Pos to, Pos from)
     {
@@ -234,6 +242,27 @@ public class Astar
             }
         }
 
+        return sum;
+    }
+    */
+    private float CalDistance(Pos to, Pos from)
+    {
+        int x = from.x , y = from.y;
+        float sum = 0;
+
+        while(true)
+        {
+            if(from.x < to.x) x = Math.Min(x+1, to.x);
+            else x = Math.Max(x-1, to.x);
+
+            if(from.y < to.y) y = Math.Min(y+1, to.y);
+            else y = Math.Max(y-1, to.y);
+
+            if(x == to.x && y == to.y)
+                break;
+
+            sum += map[x, y];
+        }
         return sum;
     }
 
