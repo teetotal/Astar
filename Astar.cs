@@ -78,25 +78,29 @@ public class Astar
         }
     }
 
+    float nodeCost; //목표지점 까지의 map cost 가 전부 0이면 많은 노드를 거쳐도 0이된다. 많은 노드를 거치면 cost가 올라가게끔 한 노드당 기본으로 할당되는 cost값
     int[,] map; 
     TreeNode leafNode;
-    Pos[] neighborPos = new Pos[4] {
+    Pos[] neighborPos = new Pos[8] {
         new Pos(0, 1),
         new Pos(0, -1),
         new Pos(1, 0),
         new Pos(-1, 0)
+        ,
         //대각선
-        /*
+        
         new Pos(1, 1),
         new Pos(-1, 1),
         new Pos(1, -1),
         new Pos(-1, -1)
-        */
+        
+        
     };
 
-    public Astar(int[,] map)
+    public Astar(int[,] map, float nodeCost)
     {
         this.map = map;
+        this.nodeCost = nodeCost;
     }
 
     public Stack<Pos> Search(Pos start, Pos end)
@@ -249,7 +253,7 @@ public class Astar
     {
         int x = from.x , y = from.y;
         float sum = 0;
-
+        
         while(true)
         {
             if(from.x < to.x) x = Math.Min(x+1, to.x);
@@ -261,7 +265,7 @@ public class Astar
             if(x == to.x && y == to.y)
                 break;
 
-            sum += map[x, y];
+            sum += map[x, y] + nodeCost; //map에 할당된 cost + 기본 cost 
         }
         return sum;
     }
