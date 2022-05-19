@@ -1,21 +1,22 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 public class AstarHelper {
     private Astar mAstar;
-    private int mHeight { get; set; }
-    private int mWidth { get; set; }
+    public int mHeight { get; set; }
+    public int mWidth { get; set; }
     public AstarHelper(int[,] map, float defaultCost) {
         mAstar = new Astar(map, defaultCost);
         mHeight = map.GetLength(0);
         mWidth = map.GetLength(1);
     }
-    public Queue<int[]>? Search(int startX, int startY, int endX, int endY) {
+    public Queue<int[]> Search(int startX, int startY, int endX, int endY) {
         return Search(new int[]{startX, startY}, new int[]{endX, endY});
     }
-    public Queue<int[]>? Search(int[] start, int[] end) {
+    public Queue<int[]> Search(int[] start, int[] end) {
         if(start[0] < 0 || end[0] < 0 || start[1] >= mHeight || end[1] >= mHeight) {
-            return null;
+            return new Queue<int[]>();
         }
         Astar.Pos posStart = ConvertToInnerPos(start);
         Astar.Pos posEnd = ConvertToInnerPos(end);

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 class Program
 {
@@ -7,15 +8,16 @@ class Program
     {
         int[,] map =
         {
-            {0,     -1,      0,       0,      0, 0, 0},
-            {0,     -1,      0,      -1,      0, 0, 0},
-            {0,     -1,      0,      -1,      0, 0, 0},
-            {0,     -1,      0,      -1,      0, 0, 0},
-            {0,      0,      0,      -1,      0, 0, 0}
+            {0,     -1,      0,       0,      0, 0},
+            {0,     -1,      0,      -1,      0, 0},
+            {0,     -1,      0,      -1,      0, 0},
+            {0,     -1,      0,      -1,      0, 0},
+            {0,      0,      0,      -1,      0, 0},
+            {0,      0,      0,      -1,      0, 0}
         };
 
         AstarHelper astar = new AstarHelper(map, 0.1f);
-        var route = astar.Search(1, 1, 6, 4);
+        var route = astar.Search(1, 1, 4, 4);
         if(route != null) {
             while(route.Count() > 0) {
                 int[] pos = route.Dequeue();
